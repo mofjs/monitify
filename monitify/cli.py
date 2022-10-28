@@ -2,6 +2,7 @@ import typer
 from pathlib import Path
 from typing import Optional
 from monitify import __app_name__, __version__
+from monitify.config import parse_config, validate_config
 
 
 app = typer.Typer()
@@ -15,7 +16,7 @@ def _version_callback(value: bool) -> None:
 
 @app.command()
 def main(
-    config: Path = typer.Option(
+    config_path: Path = typer.Option(
         Path("./config.yml"),
         "--config",
         "-c",
@@ -30,6 +31,11 @@ def main(
         is_eager=True,
     ),
 ) -> None:
-    if not config.exists():
-        typer.echo("No configuration file found.")
+    if not config_path.exists():
+        typer.secho("No configuration file found.")
+        raise typer.Exit(1)
+    config = parse_config(config_path)
+    if not validate_config(config):
+        typer.secho("Invalid configuration.")
+        raise typer.Exit(1)
     return
