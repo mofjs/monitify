@@ -25,7 +25,7 @@ class EmailTaskWorker(BaseTaskWorker):
     def getData(self) -> list:
         self.client.select("INBOX")
         (_, data) = self.client.search(None, "ALL")
-        return data
+        return str(data[0], "utf-8").split()
 
     def getItem(self, item: Any) -> str:
         (_, data) = self.client.fetch(item, "(BODY.PEEK[HEADER])")
