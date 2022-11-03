@@ -16,11 +16,16 @@ class EmailTaskWorker(BaseTaskWorker):
         port: int = 993,
         delay: float = 60.0,
     ) -> None:
+        self.host = host
+        self.port = port
+        self.user = user
+        self.password = password
         super().__init__(name, queue, delay)
-        self.client = IMAP4_SSL(host, port)
-        self.client.login(user, password)
-        self.data = self.getData()
         print(f"EmailTaskWorker for {name} is initialized.")
+
+    def setup(self) -> None:
+        self.client = IMAP4_SSL(self.host, self.port)
+        self.client.login(self.user, self.password)
 
     def getData(self) -> list:
         self.client.select("INBOX")

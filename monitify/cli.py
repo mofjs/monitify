@@ -5,6 +5,7 @@ from queue import Queue
 from monitify import __app_name__, __version__
 from monitify.config import parse_config, validate_config
 from monitify.wa import WaNotificationWorker
+from monitify.teams import TeamsNotificationWorker
 from monitify.email import EmailTaskWorker
 from monitify.owncloud import OwnCloudTaskWorker
 
@@ -51,7 +52,8 @@ def main(
             workers.append(WaNotificationWorker(
                 queue=q, **notification_config))
         if notification_type == "teams":
-            pass
+            workers.append(TeamsNotificationWorker(
+                queue=q, **notification_config))
 
     for task_config in config["tasks"]:
         task_type = task_config.pop("type")

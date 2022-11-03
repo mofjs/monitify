@@ -5,12 +5,16 @@ from queue import Queue
 
 
 class BaseTaskWorker(Thread):
-    def __init__(self, name: str, queue: Queue, delay: float, data: list = []) -> None:
+    def __init__(self, name: str, queue: Queue, delay: float) -> None:
         super().__init__()
         self.name = name
         self.queue = queue
         self.delay = delay
-        self.data = data
+        self.setup()
+        self.data = self.getData()
+    
+    def setup(self) -> None:
+        pass
 
     def getData(self) -> list:
         return []
@@ -20,7 +24,11 @@ class BaseTaskWorker(Thread):
 
     def run(self) -> None:
         while True:
-            new_data = self.getData()
+            try:
+                new_data = self.getData()
+            except:
+                self.setup()
+                continue
             items = [self.getItem(item)
                      for item in new_data if item not in self.data]
             if items:

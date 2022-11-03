@@ -8,7 +8,7 @@ class WaNotificationWorker(BaseNotificationWorker):
         super().__init__(queue=queue)
         self.client = SocketClient(url, api_key)
         self.chat_id = chat_id
-        print("WaNotificationWorker initialized.")
+        print("WaNotificationWorker is initialized.")
 
     def send_message(self, name: str, items: list[str]):
         self.client.sendText(
