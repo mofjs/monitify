@@ -1,8 +1,12 @@
 import typer
 from pathlib import Path
 from typing import Optional
+from queue import Queue
 from monitify import __app_name__, __version__
 from monitify.config import parse_config, validate_config
+from monitify.wa import WaNotificationWorker
+from monitify.email import EmailTaskWorker
+from monitify.owncloud import OwnCloudTaskWorker
 
 
 app = typer.Typer()
@@ -38,4 +42,26 @@ def main(
     if not validate_config(config):
         typer.secho("Invalid configuration.")
         raise typer.Exit(1)
-    return
+    q = Queue()
+    workers = []
+
+    for notification_config in config["notifications"]:
+        notification_type = notification_config.pop("type")
+        if notification_type == "wa":
+            workers.append(WaNotificationWorker(
+                queue=q, **notification_config))
+        if notification_type == "teams":
+            pass
+
+    for task_config in config["tasks"]:
+        task_type = task_config.pop("type")
+        if task_type == "email":
+            workers.append(EmailTaskWorker(queue=q, **task_config))
+        if task_type == "owncloud":
+            workers.append(OwnCloudTaskWorker(queue=q, **task_config))
+
+    for worker in workers:
+        worker.start()
+
+    for worker in workers:
+        worker.join()

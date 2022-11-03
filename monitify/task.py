@@ -1,22 +1,24 @@
-import threading
-import time
-import typing
-import queue
+from threading import Thread
+from time import sleep
+from typing import Any
+from queue import Queue
 
 
-class BaseTask:
-    def __init__(self, name: str, queue: queue.Queue, data: list = []) -> None:
+class BaseTaskWorker(Thread):
+    def __init__(self, name: str, queue: Queue, delay: float, data: list = []) -> None:
+        super().__init__()
         self.name = name
         self.queue = queue
+        self.delay = delay
         self.data = data
 
     def getData(self) -> list:
         return []
 
-    def getItem(self, item: typing.Any) -> str:
+    def getItem(self, item: Any) -> str:
         return f"{item}"
 
-    def loop(self, secs: float) -> None:
+    def run(self) -> None:
         while True:
             new_data = self.getData()
             items = [self.getItem(item)
@@ -27,7 +29,7 @@ class BaseTask:
                     "items": items
                 })
                 self.data = new_data
-            time.sleep(secs)
-
-    def run(self, secs: float) -> None:
-        threading.Thread(target=self.loop, args=(secs))
+                print(f"{len(items)} new items found in {self.name}.")
+            else:
+                print(f"No new items found in {self.name}.")
+            sleep(self.delay)

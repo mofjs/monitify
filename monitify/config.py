@@ -18,10 +18,10 @@ config_schema = {
                         "properties": {
                             "type": {"const": "wa"},
                             "url": {"type": "string", "format": "uri"},
-                            "key": {"type": "string"},
-                            "chatId": {"type": "string"}
+                            "api_key": {"type": "string"},
+                            "chat_id": {"type": "string"}
                         },
-                        "required": ["type", "url", "key", "chatId"]
+                        "required": ["type", "url", "api_key", "chat_id"]
                     },
                     {
                         "type": "object",
@@ -34,7 +34,7 @@ config_schema = {
                 ]
             }
         },
-        "sources": {
+        "tasks": {
             "type": "array",
             "minItems": 1,
             "uniqueItems": True,
@@ -45,12 +45,14 @@ config_schema = {
                         "properties": {
                             "type": {"const": "email"},
                             "name": {"type": "string"},
-                            "hostname": {"type": "string", "format": "hostname"},
+                            "host": {"type": "string", "format": "hostname"},
                             "port": {"type": "number"},
-                            "username": {"type": "string"},
+                            "user": {"type": "string"},
                             "password": {"type": "string"},
+                            "delay": {"type": "number"},
                         },
-                        "required": ["type", "name", "hostname", "username", "password"]
+                        "required": ["type", "name", "host", "user", "password"],
+                        "additionalProperties": False
                     },
                     {
                         "type": "object",
@@ -58,11 +60,13 @@ config_schema = {
                             "type": {"const": "owncloud"},
                             "name": {"type": "string"},
                             "url": {"type": "string", "format": "uri"},
-                            "username": {"type": "string"},
+                            "user_id": {"type": "string"},
                             "password": {"type": "string"},
-                            "directory": {"type": "string"}
+                            "path": {"type": "string"},
+                            "delay": {"type": "number"},
                         },
-                        "required": ["type", "name", "url", "username", "password"]
+                        "required": ["type", "name", "url", "user_id", "password"],
+                        "additionalProperties": False
                     }
                 ]
             }
@@ -72,19 +76,16 @@ config_schema = {
 
 
 def parse_config(path: Path) -> object:
-    try:
-        if path.suffix == ".yml":
-            return yaml.safe_load(path.read_text())
-        if path.suffix == ".json":
-            return json.load(path.read_text())
-    finally:
-        return None
+    if path.suffix == ".yml":
+        return yaml.safe_load(path.read_text())
+    if path.suffix == ".json":
+        return json.load(path.read_text())
+    raise Exception("Unsupported config file format.")
 
 
 def validate_config(config: Any) -> bool:
     try:
         jsonschema.validate(config, config_schema)
         return True
-    except jsonschema.ValidationError as e:
-        print(e)
+    except jsonschema.ValidationError:
         return False

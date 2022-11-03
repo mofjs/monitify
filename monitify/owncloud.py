@@ -1,25 +1,26 @@
-import owncloud
-import queue
-from monitify import task
+from owncloud import Client
+from queue import Queue
+from monitify.task import BaseTaskWorker
 
 
-class OwnCloudTask(task.BaseTask):
+class OwnCloudTaskWorker(BaseTaskWorker):
     def __init__(
         self,
+        queue: Queue,
         name: str,
         url: str,
-        username: str,
+        user_id: str,
         password: str,
-        directory: str,
-        queue: queue.Queue
+        path: str = "/",
+        delay: float = 300.0,
     ) -> None:
-        self.client = owncloud.Client(url)
-        self.client.login(username, password)
-        self.directory = directory
-        data = []
-        super().__init__(name, queue, data)
+        super().__init__(name, queue, delay)
+        self.client = Client(url)
+        self.client.login(user_id, password)
+        self.path = path
+        self.data = self.getData()
+        print(f"OwnCloudTaskWorker for {name} is initialized.")
 
     def getData(self) -> list:
-        contents = self.client.list(self.directory)
+        contents = self.client.list(self.path)
         return [file.name for file in contents if file.file_type == "file"]
-
