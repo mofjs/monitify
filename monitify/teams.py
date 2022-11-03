@@ -14,3 +14,4 @@ class TeamsNotificationWorker(BaseNotificationWorker):
         message.title("❗ Pemberitahuan ❗")
         message.text(
             f"{len(items)} item baru pada {name}:\n\n - " + "\n - ".join(items))
+        message.send()

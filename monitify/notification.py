@@ -7,7 +7,7 @@ class BaseNotificationWorker(Thread):
         super().__init__()
         self.queue = queue
 
-    def send_message(self, name: str, items: list[str]):
+    def send_message(self, name: str, items: list[str]) -> None:
         pass
 
     def run(self) -> None:
