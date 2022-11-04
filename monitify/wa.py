@@ -1,14 +1,12 @@
-from queue import Queue
 from wa_automate_socket_client import SocketClient
-from monitify.notification import BaseNotificationWorker
+from monitify.notif import BaseNotif
 
 
-class WaNotificationWorker(BaseNotificationWorker):
-    def __init__(self, url: str, api_key: str, chat_id: str, queue: Queue) -> None:
-        super().__init__(queue=queue)
+class WaNotif(BaseNotif):
+    def __init__(self, url: str, api_key: str, chat_id: str) -> None:
+        super().__init__()
         self.client = SocketClient(url, api_key)
         self.chat_id = chat_id
-        print("WaNotificationWorker is initialized.")
 
     def send_message(self, name: str, items: list[str]):
         self.client.sendText(

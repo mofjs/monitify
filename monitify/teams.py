@@ -1,14 +1,11 @@
-
 from pymsteams import connectorcard
-from queue import Queue
-from monitify.notification import BaseNotificationWorker
+from monitify.notif import BaseNotif
 
 
-class TeamsNotificationWorker(BaseNotificationWorker):
-    def __init__(self, url: str, queue: Queue) -> None:
-        super().__init__(queue)
+class TeamsNotif(BaseNotif):
+    def __init__(self, url: str, ) -> None:
+        super().__init__()
         self.url = url
-        print("TeamsNotificationWorker is initialized")
 
     def send_message(self, name: str, items: list[str]):
         message = connectorcard(self.url)

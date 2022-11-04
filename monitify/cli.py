@@ -4,8 +4,7 @@ from typing import Optional
 from queue import Queue
 from monitify import __app_name__, __version__
 from monitify.config import parse_config, validate_config
-from monitify.wa import WaNotificationWorker
-from monitify.teams import TeamsNotificationWorker
+from monitify.notification import NotificationsWorker
 from monitify.email import EmailTaskWorker
 from monitify.owncloud import OwnCloudTaskWorker
 
@@ -46,14 +45,7 @@ def main(
     q = Queue()
     workers = []
 
-    for notification_config in config["notifications"]:
-        notification_type = notification_config.pop("type")
-        if notification_type == "wa":
-            workers.append(WaNotificationWorker(
-                queue=q, **notification_config))
-        if notification_type == "teams":
-            workers.append(TeamsNotificationWorker(
-                queue=q, **notification_config))
+    workers.append(NotificationsWorker(q, config["notifications"]))
 
     for task_config in config["tasks"]:
         task_type = task_config.pop("type")
