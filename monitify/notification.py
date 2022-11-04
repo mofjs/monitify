@@ -1,25 +1,28 @@
-from abc import ABCMeta, abstractmethod
-from queue import Queue
-from threading import Thread
+from queue import Queue, Empty
+from threading import Thread, Event
 from monitify.notif import BaseNotif
 from monitify.wa import WaNotif
 from monitify.teams import TeamsNotif
 
 
 class NotificationsWorker(Thread):
-    def __init__(self, queue: Queue, configs: list[dict]) -> None:
+    def __init__(self, queue: Queue, kill: Event, configs: list[dict]) -> None:
         super().__init__()
         self.queue = queue
+        self.kill = kill
         self.notifs: list[BaseNotif] = []
         for config in configs:
-            type = config.pop("type")
-            if type == "wa":
+            notif_type = config.pop("type")
+            if notif_type == "wa":
                 self.notifs.append(WaNotif(**config))
-            if type == "teams":
+            if notif_type == "teams":
                 self.notifs.append(TeamsNotif(**config))
 
     def run(self) -> None:
-        while True:
-            message = self.queue.get()
-            for notif in self.notifs:
-                notif.send_message(message["name"], message["items"])
+        while not self.kill.is_set():
+            try:
+                message = self.queue.get(timeout=10)
+                for notif in self.notifs:
+                    notif.send_message(message["name"], message["items"])
+            except Empty:
+                continue

@@ -1,5 +1,6 @@
 from email import message_from_bytes
 from imaplib import IMAP4_SSL
+from threading import Event
 from typing import Any
 from queue import Queue
 from monitify.task import BaseTaskWorker
@@ -9,6 +10,7 @@ class EmailTaskWorker(BaseTaskWorker):
     def __init__(
         self,
         queue: Queue,
+        kill: Event,
         name: str,
         host: str,
         user: str,
@@ -20,7 +22,7 @@ class EmailTaskWorker(BaseTaskWorker):
         self.port = port
         self.user = user
         self.password = password
-        super().__init__(name, queue, delay)
+        super().__init__(name, queue, kill, delay)
         print(f"EmailTaskWorker for {name} is initialized.")
 
     def setup(self) -> None:

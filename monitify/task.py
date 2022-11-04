@@ -1,18 +1,19 @@
-from threading import Thread
+from threading import Thread, Event
 from time import sleep
 from typing import Any
 from queue import Queue
 
 
 class BaseTaskWorker(Thread):
-    def __init__(self, name: str, queue: Queue, delay: float) -> None:
+    def __init__(self, name: str, queue: Queue, kill: Event, delay: float) -> None:
         super().__init__()
         self.name = name
         self.queue = queue
+        self.kill = kill
         self.delay = delay
         self.setup()
         self.data = self.getData()
-    
+
     def setup(self) -> None:
         pass
 
@@ -23,7 +24,7 @@ class BaseTaskWorker(Thread):
         return f"{item}"
 
     def run(self) -> None:
-        while True:
+        while not self.kill.wait(self.delay):
             try:
                 new_data = self.getData()
             except:
@@ -40,4 +41,3 @@ class BaseTaskWorker(Thread):
                 print(f"{len(items)} new items found in {self.name}.")
             else:
                 print(f"No new items found in {self.name}.")
-            sleep(self.delay)

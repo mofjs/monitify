@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="Monitify",
+    name="monitify",
     version="1.0.0",
     author="Sukirno",
     author_email="mblonyox@gmail.com",
