@@ -2,3 +2,5 @@
 __pycache__
 *.egg-info
 config.yml
+ecosystem.config.js
+main.py
