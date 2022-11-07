@@ -13,7 +13,7 @@ setup(
     url="https://github.com/mofjs/monitify",
     packages=find_packages(),
     python_requires=">=3.9.0",
-    install_requires=["typer", "pyocclient", "pymsteams", "wa-automate-socket-client", "rich", "shellingham"],
+    install_requires=["typer", "pyocclient", "pymsteams", "jsonschema", "PyYAML", "wa-automate-socket-client", "rich", "shellingham"],
     entry_points={
         "console_scripts": [
             "monitify=monitify.cli:app"
