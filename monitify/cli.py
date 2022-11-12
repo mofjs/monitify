@@ -63,7 +63,6 @@ def main(
         worker.start()
 
     while not k.wait(10):
-        print("Health check.")
         if any(not worker.is_alive() for worker in workers):
             k.set()
             for worker in workers:
