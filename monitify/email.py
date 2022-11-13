@@ -2,14 +2,14 @@ from email import message_from_bytes
 from imaplib import IMAP4_SSL
 from threading import Event
 from typing import Any
-from queue import Queue
+from queue import SimpleQueue
 from monitify.task import BaseTaskWorker
 
 
 class EmailTaskWorker(BaseTaskWorker):
     def __init__(
         self,
-        queue: Queue,
+        queue: SimpleQueue,
         kill: Event,
         name: str,
         host: str,

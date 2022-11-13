@@ -1,4 +1,4 @@
-from queue import Queue, Empty
+from queue import SimpleQueue, Empty
 from threading import Thread, Event
 from monitify.notif import BaseNotif
 from monitify.wa import WaNotif
@@ -6,7 +6,7 @@ from monitify.teams import TeamsNotif
 
 
 class NotificationsWorker(Thread):
-    def __init__(self, queue: Queue, kill: Event, configs: list[dict]) -> None:
+    def __init__(self, queue: SimpleQueue, kill: Event, configs: list[dict]) -> None:
         super().__init__()
         self.queue = queue
         self.kill = kill

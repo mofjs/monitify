@@ -1,13 +1,13 @@
 from owncloud import Client
 from threading import Event
-from queue import Queue
+from queue import SimpleQueue
 from monitify.task import BaseTaskWorker
 
 
 class OwnCloudTaskWorker(BaseTaskWorker):
     def __init__(
         self,
-        queue: Queue,
+        queue: SimpleQueue,
         kill: Event,
         name: str,
         url: str,

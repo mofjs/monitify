@@ -2,7 +2,7 @@ import typer
 from pathlib import Path
 from threading import Event, Thread
 from typing import Optional
-from queue import Queue
+from queue import SimpleQueue
 from monitify import __app_name__, __version__
 from monitify.config import parse_config, validate_config
 from monitify.notification import NotificationsWorker
@@ -44,7 +44,7 @@ def main(
         print("Invalid configuration.")
         raise typer.Exit(1)
     print("Configuration accepted.")
-    q = Queue()
+    q = SimpleQueue()
     k = Event()
     workers: list[Thread] = []
 

@@ -1,11 +1,11 @@
 from threading import Thread, Event
 from typer import Exit
 from typing import Any
-from queue import Queue
+from queue import SimpleQueue
 
 
 class BaseTaskWorker(Thread):
-    def __init__(self, name: str, queue: Queue, kill: Event, delay: float) -> None:
+    def __init__(self, name: str, queue: SimpleQueue, kill: Event, delay: float) -> None:
         super().__init__()
         self.name = name
         self.queue = queue
