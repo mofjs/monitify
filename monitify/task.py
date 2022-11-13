@@ -1,5 +1,5 @@
 from threading import Thread, Event
-from time import sleep
+from typer import Exit
 from typing import Any
 from queue import Queue
 
@@ -11,8 +11,6 @@ class BaseTaskWorker(Thread):
         self.queue = queue
         self.kill = kill
         self.delay = delay
-        self.setup()
-        self.data = self.getData()
 
     def setup(self) -> None:
         pass
@@ -24,20 +22,30 @@ class BaseTaskWorker(Thread):
         return f"{item}"
 
     def run(self) -> None:
-        while not self.kill.wait(self.delay):
+        unset = True
+        retry = 0
+        while not self.kill.wait((retry * 5) if unset else self.delay):
             try:
-                new_data = self.getData()
+                if unset:
+                    self.setup()
+                    self.data = self.getData()
+                    unset = False
+                    retry = 0
+                else:
+                    new_data = self.getData()
+                    items = [self.getItem(item)
+                             for item in new_data if item not in self.data]
+                    if items:
+                        self.queue.put({
+                            "name": self.name,
+                            "items": items
+                        })
+                        self.data = new_data
+                        print(f"{len(items)} new items found in {self.name}.")
+                    else:
+                        print(f"No new items found in {self.name}.")
             except:
-                self.setup()
-                continue
-            items = [self.getItem(item)
-                     for item in new_data if item not in self.data]
-            if items:
-                self.queue.put({
-                    "name": self.name,
-                    "items": items
-                })
-                self.data = new_data
-                print(f"{len(items)} new items found in {self.name}.")
-            else:
-                print(f"No new items found in {self.name}.")
+                if retry > 99:
+                    raise Exit(1)
+                unset = True
+                retry += 1

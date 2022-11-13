@@ -18,11 +18,11 @@ class EmailTaskWorker(BaseTaskWorker):
         port: int = 993,
         delay: float = 60.0,
     ) -> None:
+        super().__init__(name, queue, kill, delay)
         self.host = host
         self.port = port
         self.user = user
         self.password = password
-        super().__init__(name, queue, kill, delay)
         print(f"EmailTaskWorker for {name} is initialized.")
 
     def setup(self) -> None:

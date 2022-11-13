@@ -16,11 +16,11 @@ class OwnCloudTaskWorker(BaseTaskWorker):
         path: str = "/",
         delay: float = 300.0,
     ) -> None:
+        super().__init__(name, queue, kill, delay)
         self.url = url
         self.user_id = user_id
         self.password = password
         self.path = path
-        super().__init__(name, queue, kill, delay)
         print(f"OwnCloudTaskWorker for {name} is initialized.")
 
     def setup(self) -> None:
