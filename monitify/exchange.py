@@ -39,7 +39,7 @@ class ExchangeTaskWorker(Thread):
                             items = []
                             for event in notification.events:
                                 if isinstance(event, NewMailEvent):
-                                    mail = self.account.inbox.get(event.item_id.id)
+                                    mail = self.account.inbox.get(id=event.item_id.id)
                                     items.append(
                                         f"{mail.sender.name}<{mail.sender.email_address}>: {mail.subject}")
                             if items:
@@ -49,8 +49,8 @@ class ExchangeTaskWorker(Thread):
                                 })
                 retry = 0
             except Exception as e:
-                print(f"[{self.name}]: Retrying subscription for {retry} time(s)")
-                print(f"[{self.name}]: Last error\t {e}")
                 if retry > 99:
                     raise Exit(1)
                 retry += 1
+                print(f"[{self.name}]: Retrying subscription for {retry} time(s)")
+                print(f"[{self.name}]: Last error\t {e}")
