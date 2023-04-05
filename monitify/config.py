@@ -77,7 +77,7 @@ config_schema = {
                             "username": {"type": "string"},
                             "password": {"type": "string"},
                             "email": {"type": "string"},
-                            "delay": {"type": "number"},
+                            "timeout": {"type": "number"},
                         },
                         "required": ["type", "name", "server", "username", "password", "email"],
                         "additionalProperties": False
