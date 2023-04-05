@@ -15,7 +15,7 @@ class ExchangeTaskWorker(Thread):
         username: str,
         password: str,
         email: str,
-        timeout = 60
+        timeout = 5
     ) -> None:
         super().__init__()
         self.queue = queue
@@ -34,18 +34,19 @@ class ExchangeTaskWorker(Thread):
             try:
                 with self.account.inbox.streaming_subscription() as subscription_id:
                     print(f"[{self.name}]: Subscribed with id {subscription_id}")
-                    for notification in self.account.inbox.get_streaming_events(subscription_id, connection_timeout=self.timeout):
-                        items = []
-                        for event in notification.events:
-                            if isinstance(event, NewMailEvent):
-                                mail = self.account.inbox.get(event.item_id.id)
-                                items.append(
-                                    f"{mail.sender.name}<{mail.sender.email_address}>: {mail.subject}")
-                        if items:
-                            self.queue.put({
-                                "name": self.name,
-                                "items": items
-                            })
+                    while not self.kill.wait():
+                        for notification in self.account.inbox.get_streaming_events(subscription_id, connection_timeout=self.timeout):
+                            items = []
+                            for event in notification.events:
+                                if isinstance(event, NewMailEvent):
+                                    mail = self.account.inbox.get(event.item_id.id)
+                                    items.append(
+                                        f"{mail.sender.name}<{mail.sender.email_address}>: {mail.subject}")
+                            if items:
+                                self.queue.put({
+                                    "name": self.name,
+                                    "items": items
+                                })
                 retry = 0
             except Exception as e:
                 print(f"[{self.name}]: Retrying subscription for {retry} time(s)")
