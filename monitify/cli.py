@@ -5,6 +5,7 @@ from typing import Optional
 from queue import SimpleQueue
 from monitify import __app_name__, __version__
 from monitify.config import parse_config, validate_config
+from monitify.exchange import ExchangeTaskWorker
 from monitify.notification import NotificationsWorker
 from monitify.email import EmailTaskWorker
 from monitify.owncloud import OwnCloudTaskWorker
@@ -57,6 +58,8 @@ def main(
             workers.append(EmailTaskWorker(queue=q, kill=k, **task_config))
         if task_type == "owncloud":
             workers.append(OwnCloudTaskWorker(queue=q, kill=k, **task_config))
+        if task_type == "exchange":
+            workers.append(ExchangeTaskWorker(queue=q, kill=k, **task_config))
 
     print("Start monitoring.")
     for worker in workers:
