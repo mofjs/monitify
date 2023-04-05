@@ -21,8 +21,9 @@ class ExchangeTaskWorker(Thread):
         self.queue = queue
         self.kill = kill
         self.delay = delay
+        self.name = name
         credentials = Credentials(username, password)
-        config = Configuration(credentials, server)
+        config = Configuration(credentials, server, max_connections=4)
         self.account = Account(email, autodiscover=False,
                                config=config, access_type=DELEGATE)
         print(f"ExchangeTaskWorker for {name} is initialized.")
@@ -32,6 +33,7 @@ class ExchangeTaskWorker(Thread):
         while not self.kill.wait((retry * 5) if retry > 0 else self.delay):
             try:
                 with self.account.inbox.streaming_subscription() as subscription_id:
+                    print(f"[{self.name}]: Subscribed with id {subscription_id}")
                     for notification in self.account.inbox.get_streaming_events(subscription_id):
                         items = []
                         for event in notification.events:
@@ -45,7 +47,9 @@ class ExchangeTaskWorker(Thread):
                                 "items": items
                             })
                 retry = 0
-            except:
+            except Exception as e:
+                print(f"[{self.name}]: Retrying subscription for {retry} time(s)")
+                print(f"[{self.name}]: Last error\t {e}")
                 if retry > 99:
                     raise Exit(1)
                 retry += 1
