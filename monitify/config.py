@@ -67,6 +67,20 @@ config_schema = {
                         },
                         "required": ["type", "name", "url", "user_id", "password"],
                         "additionalProperties": False
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {"const": "exchange"},
+                            "name": {"type": "string"},
+                            "server": {"type": "string", "format": "hostname"},
+                            "username": {"type": "string"},
+                            "password": {"type": "string"},
+                            "email": {"type": "string"},
+                            "delay": {"type": "number"},
+                        },
+                        "required": ["type", "name", "server", "username", "password", "email"],
+                        "additionalProperties": False
                     }
                 ]
             }
