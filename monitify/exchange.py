@@ -38,7 +38,7 @@ class ExchangeTaskWorker(Thread):
                         items = []
                         for event in notification.events:
                             if isinstance(event, NewMailEvent):
-                                mail = self.account.inbox.get(event.item_id)
+                                mail = self.account.inbox.get(event.item_id.id)
                                 items.append(
                                     f"{mail.sender.name}<{mail.sender.email_address}>: {mail.subject}")
                         if items:
