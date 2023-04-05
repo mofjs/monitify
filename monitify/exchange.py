@@ -17,6 +17,7 @@ class ExchangeTaskWorker(Thread):
         email: str,
         delay=60.0
     ) -> None:
+        super().__init__()
         self.queue = queue
         self.kill = kill
         self.delay = delay
