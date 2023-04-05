@@ -34,7 +34,7 @@ class ExchangeTaskWorker(Thread):
             try:
                 with self.account.inbox.streaming_subscription() as subscription_id:
                     print(f"[{self.name}]: Subscribed with id {subscription_id}")
-                    while not self.kill.wait():
+                    while not self.kill.wait(1):
                         for notification in self.account.inbox.get_streaming_events(subscription_id, connection_timeout=self.timeout):
                             items = []
                             for event in notification.events:
