@@ -3,6 +3,7 @@ from threading import Thread, Event
 from monitify.notif import BaseNotif
 from monitify.wa import WaNotif
 from monitify.teams import TeamsNotif
+from monitify.webhook import WebhookNotif
 
 
 class NotificationsWorker(Thread):
@@ -17,6 +18,8 @@ class NotificationsWorker(Thread):
                 self.notifs.append(WaNotif(**config))
             if notif_type == "teams":
                 self.notifs.append(TeamsNotif(**config))
+            if notif_type == "webhook":
+                self.notifs.append(WebhookNotif(**config))
 
     def run(self) -> None:
         while not self.kill.is_set():

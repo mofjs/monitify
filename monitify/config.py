@@ -30,6 +30,14 @@ config_schema = {
                             "url": {"type": "string", "format": "uri"}
                         },
                         "required": ["type", "url"]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {"const": "webhook"},
+                            "url": {"type": "string", "format": "uri"}
+                        },
+                        "required": ["type", "url"]
                     }
                 ]
             }
